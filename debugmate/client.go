@@ -1,4 +1,4 @@
-package cockpit
+package debugmate
 
 import (
 	"net/http"
