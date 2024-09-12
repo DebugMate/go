@@ -20,9 +20,9 @@ func Init(options Options) {
 	}
 }
 
-func Catch(err error, stack []Trace) error {
-	event := EventFromError(err, stack)
-
+func Catch(err error) error {
+	stackTraceContext := NewStackTraceContext() // Captura o trace automaticamente
+	event := EventFromError(err, stackTraceContext.GetContext())
 	occurrence, err := OccurrenceFromEvent(event)
 	if err != nil {
 		return err

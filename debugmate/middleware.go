@@ -12,16 +12,14 @@ func Recoverer(next http.Handler) http.Handler {
 				if rvr == http.ErrAbortHandler {
 					panic(rvr)
 				}
-				context := NewStackTraceContext()
 
 				err := fmt.Errorf("%v", rvr)
 
-				Catch(err, context.GetContext())
+				Catch(err)
 
 				w.WriteHeader(http.StatusInternalServerError)
 				w.Write([]byte("Internal Server Error"))
 
-				fmt.Println("Stack Trace Context:", context.GetContext())
 			}
 		}()
 
