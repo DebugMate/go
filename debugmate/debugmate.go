@@ -20,9 +20,13 @@ func Init(options Options) {
 	}
 }
 
-func Catch(err error, stack []byte) error {
+func Catch(err error, stack []Trace) error {
 	event := EventFromError(err, stack)
-	occurrence := OccurrenceFromEvent(event)
+
+	occurrence, err := OccurrenceFromEvent(event)
+	if err != nil {
+		return err
+	}
 
 	return Dbm.publish(occurrence)
 }

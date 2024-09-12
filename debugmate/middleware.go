@@ -3,7 +3,6 @@ package debugmate
 import (
 	"fmt"
 	"net/http"
-	"runtime/debug"
 )
 
 func Recoverer(next http.Handler) http.Handler {
@@ -13,15 +12,16 @@ func Recoverer(next http.Handler) http.Handler {
 				if rvr == http.ErrAbortHandler {
 					panic(rvr)
 				}
+				context := NewStackTraceContext()
 
 				err := fmt.Errorf("%v", rvr)
 
-				Catch(err, debug.Stack())
+				Catch(err, context.GetContext())
 
 				w.WriteHeader(http.StatusInternalServerError)
 				w.Write([]byte("Internal Server Error"))
 
-				fmt.Printf("Recovered from panic: %v\nStack trace: %s\n", rvr, debug.Stack())
+				fmt.Println("Stack Trace Context:", context.GetContext())
 			}
 		}()
 
