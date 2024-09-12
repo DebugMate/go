@@ -10,10 +10,10 @@ type Event struct {
 	Message     string
 	File        string
 	Type        string
-	Trace       string
+	Trace       []byte
 }
 
-func EventFromError(err error, stack string) Event {
+func EventFromError(err error, stack []byte) Event {
 	_, file, _, _ := runtime.Caller(1)
 
 	event := Event{

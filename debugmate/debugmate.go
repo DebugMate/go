@@ -20,7 +20,7 @@ func Init(options Options) {
 	}
 }
 
-func Catch(err error, stack string) error {
+func Catch(err error, stack []byte) error {
 	event := EventFromError(err, stack)
 	occurrence := OccurrenceFromEvent(event)
 

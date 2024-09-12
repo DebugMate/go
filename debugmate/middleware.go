@@ -16,7 +16,7 @@ func Recoverer(next http.Handler) http.Handler {
 
 				err := fmt.Errorf("%v", rvr)
 
-				Catch(err, string(debug.Stack()))
+				Catch(err, debug.Stack())
 
 				w.WriteHeader(http.StatusInternalServerError)
 				w.Write([]byte("Internal Server Error"))
