@@ -6,13 +6,14 @@ import (
 )
 
 type Event struct {
-	Exception string
-	Message   string
-	File      string
-	Type      string
+	Exception   string
+	Message     string
+	File        string
+	Type        string
+	Trace       string
 }
 
-func EventFromError(err error) Event {
+func EventFromError(err error, stack string) Event {
 	_, file, _, _ := runtime.Caller(1)
 
 	event := Event{
@@ -20,6 +21,7 @@ func EventFromError(err error) Event {
 		Message:   err.Error(),
 		File:      file,
 		Type:      "cli",
+		Trace:      stack,
 	}
 
 	return event

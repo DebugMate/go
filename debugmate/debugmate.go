@@ -20,8 +20,8 @@ func Init(options Options) {
 	}
 }
 
-func Catch(err error) error {
-	event := EventFromError(err)
+func Catch(err error, stack string) error {
+	event := EventFromError(err, stack)
 	occurrence := OccurrenceFromEvent(event)
 
 	return Dbm.publish(occurrence)
@@ -44,7 +44,7 @@ func (dbm DebugMate) publish(occurrence Occurrence) error {
 	}
 
 	if response.StatusCode != http.StatusCreated {
-		return fmt.Errorf("ops, we're expecting an 201 status code, but received %d", response.StatusCode)
+		return fmt.Errorf("ops, we're expecting a 201 status code, but received %d", response.StatusCode)
 	}
 
 	return nil
