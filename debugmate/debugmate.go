@@ -51,5 +51,5 @@ func (dbm DebugMate) publish(occurrence Occurrence) error {
 }
 
 func (dbm DebugMate) endpoint() string {
-	return strings.TrimSuffix(dbm.Options.Domain, "/") + "/webhook"
+	return strings.TrimSuffix(dbm.Options.Domain, "/") + "/api/capture"
 }
