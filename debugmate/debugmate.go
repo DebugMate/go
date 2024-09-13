@@ -3,7 +3,6 @@ package debugmate
 import (
 	"fmt"
 	"net/http"
-	"runtime/debug"
 	"strings"
 )
 
@@ -22,7 +21,6 @@ func Init(options Options) {
 }
 
 func Catch(err error) error {
-	debug.PrintStack()
 	stackTraceContext := NewStackTraceContext()
 	event := EventFromError(err, stackTraceContext.GetContext())
 	occurrence, err := OccurrenceFromEvent(event)

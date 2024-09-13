@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"reflect"
 	"runtime"
+	"strconv"
+	"time"
+	"os"
 )
 
 type Request struct {
@@ -19,6 +22,11 @@ type Request struct {
 	QueryString  map[string][]string `json:"query_string"`
 	Body         map[string]interface{} `json:"body"`
 	Cookies      []Cookie             `json:"cookies"`
+}
+
+type Environment struct {
+	Group     string            `json:"group"`
+	Variables map[string]string `json:"variables"`
 }
 
 type Cookie struct {
@@ -35,6 +43,7 @@ type Event struct {
 	URL       string   `json:"url"`
 	Trace     []Trace  `json:"trace"`
 	Request   Request  `json:"request"`
+	Environment []Environment `json:"environment"`
 }
 
 func EventFromError(err error, stack []Trace) Event {
@@ -74,6 +83,8 @@ func EventFromErrorWithRequest(err error, r *http.Request) (Event, error) {
 		Body:        getRequestBody(r),
 		Cookies:     getCookies(r),
 	}
+
+	event.Environment = getEnvironment()
 
 	return event, nil
 }
@@ -119,4 +130,31 @@ func generateCurlCommand(r *http.Request) string {
 
 func (e *Event) ToJSON() ([]byte, error) {
 	return json.Marshal(e)
+}
+
+
+func getEnvironment() []Environment {
+	return []Environment{
+		{
+			Group: "System",
+			Variables: map[string]string{
+				"Go Version":     runtime.Version(),
+				"OS":             runtime.GOOS,
+				"Architecture":   runtime.GOARCH,
+				"CPU Cores":      strconv.Itoa(runtime.NumCPU()),
+				"Go Root":        runtime.GOROOT(),
+				"Go Path":        os.Getenv("GOPATH"),
+				"Current Dir":    getCurrentDir(),
+				"Environment Date Time": time.Now().Format(time.RFC3339),
+			},
+		},
+	}
+}
+
+func getCurrentDir() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "unknown"
+	}
+	return dir
 }

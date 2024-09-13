@@ -21,6 +21,11 @@ func OccurrenceFromEvent(event Event) (Occurrence, error) {
         return Occurrence{}, err
     }
 
+	environmentJSON, err := json.Marshal(event.Environment)
+	if err != nil {
+		return Occurrence{}, err
+	}
+
     payload := url.Values{
         "exception": {event.Exception},
         "message":   {event.Message},
@@ -30,6 +35,7 @@ func OccurrenceFromEvent(event Event) (Occurrence, error) {
         "code":      {strconv.Itoa(event.Code)},
         "trace":     {string(traceJSON)},
         "request":   {string(requestJSON)},
+		"environment": {string(environmentJSON)},
     }
 
     return Occurrence{Payload: payload}, nil
