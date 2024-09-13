@@ -13,19 +13,16 @@ type Trace struct {
 	Preview  []string `json:"preview"`
 }
 
-// StackTraceContext armazena o contexto do stack trace
 type StackTraceContext struct {
 	Stack []Trace
 }
 
-// NewStackTraceContext cria uma nova instância de StackTraceContext a partir de um panic
 func NewStackTraceContext() *StackTraceContext {
 	return &StackTraceContext{
 		Stack: formatStack(),
 	}
 }
 
-// formatStack captura e formata o stack trace
 func formatStack() []Trace {
 	var traces []Trace
 	stack := make([]byte, 1024)
@@ -42,7 +39,7 @@ func formatStack() []Trace {
 					File:     strings.Split(parts[0], ":")[0],
 					Line:     parseLine(parts[0]),
 					Function: strings.Join(parts[1:], " "),
-					Preview:  []string{line}, // Adiciona a linha completa como preview
+					Preview:  []string{line},
 				}
 				traces = append(traces, trace)
 			}
@@ -52,7 +49,6 @@ func formatStack() []Trace {
 	return traces
 }
 
-// parseLine extrai o número da linha do formato "file:line"
 func parseLine(fileLine string) int {
 	parts := strings.Split(fileLine, ":")
 	if len(parts) > 1 {
@@ -64,7 +60,6 @@ func parseLine(fileLine string) int {
 	return 0
 }
 
-// GetContext retorna o contexto do stack trace
 func (s *StackTraceContext) GetContext() []Trace {
 	return s.Stack
 }

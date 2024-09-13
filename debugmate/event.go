@@ -13,7 +13,6 @@ type Event struct {
 	Trace     []Trace
 }
 
-// EventFromError cria um evento a partir de um erro e do trace
 func EventFromError(err error, stack []Trace) Event {
 	_, file, _, _ := runtime.Caller(1)
 
