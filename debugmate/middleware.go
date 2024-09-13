@@ -27,29 +27,38 @@ func (rw *responseWriter) Write(b []byte) (int, error) {
 }
 
 func Recoverer(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        rw := &responseWriter{ResponseWriter: w, status: http.StatusOK}
-        
-        defer func() {
-            if rvr := recover(); rvr != nil {
-                if rvr == http.ErrAbortHandler {
-                    panic(rvr)
-                }
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		rw := &responseWriter{ResponseWriter: w, status: http.StatusOK}
 
-                err := fmt.Errorf("Panic recovered: %v", rvr)
-                Catch(err)
+		defer func() {
+			if rvr := recover(); rvr != nil {
+				if rvr == http.ErrAbortHandler {
+					panic(rvr)
+				}
 
-                rw.WriteHeader(http.StatusInternalServerError)
-                rw.Write([]byte("Internal Server Error"))
-            }
+				err := fmt.Errorf("Panic recovered: %v", rvr)
+				Catch(err)
 
-            // Capturar todos os erros HTTP (4xx e 5xx)
-            if rw.status >= 400 {
-                err := fmt.Errorf("HTTP error: %d %s", rw.status, http.StatusText(rw.status))
-                Catch(err)
-            }
-        }()
+				rw.WriteHeader(http.StatusInternalServerError)
+				rw.Write([]byte("Internal Server Error"))
+			}
 
-        next.ServeHTTP(rw, r)
-    })
+			if rw.status >= 400 {
+				err := fmt.Errorf("HTTP error: %d %s", rw.status, http.StatusText(rw.status))
+				event, captureErr := EventFromErrorWithRequest(err, r)
+				if captureErr != nil {
+					fmt.Println("Error capturing request info:", captureErr)
+				}
+
+				occurrence, occErr := OccurrenceFromEvent(event)
+				if occErr != nil {
+					fmt.Println("Error creating occurrence from event:", occErr)
+				}
+
+				Dbm.publish(occurrence)
+			}
+		}()
+
+		next.ServeHTTP(rw, r)
+	})
 }

@@ -3,6 +3,7 @@ package debugmate
 import (
 	"encoding/json"
 	"net/url"
+	"strconv"
 )
 
 type Occurrence struct {
@@ -10,18 +11,26 @@ type Occurrence struct {
 }
 
 func OccurrenceFromEvent(event Event) (Occurrence, error) {
-	traceJSON, err := json.Marshal(event.Trace)
-	if err != nil {
-		return Occurrence{}, err
-	}
+    traceJSON, err := json.Marshal(event.Trace)
+    if err != nil {
+        return Occurrence{}, err
+    }
 
-	payload := url.Values{
-		"exception": {event.Exception},
-		"message":   {event.Message},
-		"file":      {event.File},
-		"type":      {event.Type},
-		"trace":     {string(traceJSON)},
-	}
+    requestJSON, err := json.Marshal(event.Request)
+    if err != nil {
+        return Occurrence{}, err
+    }
 
-	return Occurrence{Payload: payload}, nil
+    payload := url.Values{
+        "exception": {event.Exception},
+        "message":   {event.Message},
+        "file":      {event.File},
+        "type":      {event.Type},
+        "url":       {event.URL},
+        "code":      {strconv.Itoa(event.Code)},
+        "trace":     {string(traceJSON)},
+        "request":   {string(requestJSON)},
+    }
+
+    return Occurrence{Payload: payload}, nil
 }
