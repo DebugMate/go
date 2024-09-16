@@ -19,11 +19,11 @@ type StackTraceContext struct {
 
 func NewStackTraceContext() *StackTraceContext {
 	return &StackTraceContext{
-		Stack: formatStack(),
+		Stack: FormatStack(),
 	}
 }
 
-func formatStack() []Trace {
+func FormatStack() []Trace {
 	var traces []Trace
 	stack := make([]byte, 1024)
 	n := runtime.Stack(stack, false)
