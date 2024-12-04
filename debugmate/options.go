@@ -1,4 +1,4 @@
-package cockpit
+package debugmate
 
 type Options struct {
 	Domain  string
