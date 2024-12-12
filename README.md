@@ -26,7 +26,7 @@ func main() {
 
 1. Configure `go.mod` 
 ```go
-go mod edit -replace github.com/DebugMate/go=../path-to-package
+go get github.com/DebugMate/go
 ```
 2. Run tidy
 ```go
